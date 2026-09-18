@@ -1,0 +1,57 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+.yarn/install-state.gz
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# local env files
+.env*.local
+
+# supabase
+supabase/.temp
+
+# legacy stitch-export prototype folders (kept on disk, not committed)
+/architect_profile_louis_i._kahn_1/
+/architect_profile_louis_i._kahn_2/
+/architectural_detail_photography_of_brick_craftsmanship_warm_natural_textured/
+/architectural_photography_of_thermal_baths_vals_by_peter_zumthor_quartzite/
+/architectural_photography_of_the_salk_institute_by_louis_kahn_dramatic/
+/architecture_dialogue_home_feed/
+/architecture_dialogue_mark/
+/architecture_dialogue_reader/
+/black_and_white_editorial_studio_portrait_photograph_of_a_distinguished/
+/home_feed_architecture_dialogue/
+/reading_order_is_what_a_brick_wants_to_be/
+/reading_what_a_brick_wants_to_be/
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+node_modules/
+.next/
+.env
+.env.local
