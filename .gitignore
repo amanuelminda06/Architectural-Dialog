@@ -48,6 +48,9 @@ supabase/.temp
 # vercel
 .vercel
 
+# kilo local tooling
+/.kilo/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
