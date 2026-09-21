@@ -1,8 +1,8 @@
 import { redirect } from "next/navigation";
-import Link from "next/link";
 import { getSupabaseServerClient } from "@/lib/supabase-server";
 import { PortalNav } from "@/components/portal-nav";
 import { Icon } from "@/components/icon";
+import { RequestApproval } from "@/components/request-approval";
 
 export const metadata = { title: "Architect Portal · Architecture Dialogue" };
 
@@ -66,16 +66,10 @@ export default async function PortalLayout({
               your account, publishing tools will open here.
             </p>
             <div className="bg-surface-container-low rounded-lg p-space-md font-caption text-caption text-secondary leading-relaxed">
-              If you believe this is an error, contact the editorial
-              directorate. Approved architects can also reach the{" "}
-              <Link
-                href="/admin"
-                className="text-primary underline decoration-primary underline-offset-4"
-              >
-                admin console
-              </Link>
-              .
+              If you believe this is an error, request approval now so the
+              editorial office sees your application, or reach out directly.
             </div>
+            <RequestApproval />
           </div>
         </main>
       </div>

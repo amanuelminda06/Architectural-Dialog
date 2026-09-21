@@ -1,6 +1,6 @@
 "use server";
 
-import { getSupabaseAdminClient } from "./supabase-admin";
+import { getSupabaseServerClient } from "./supabase-server";
 import { revalidatePath } from "next/cache";
 import {
   verifyAdminSession,
@@ -28,31 +28,28 @@ export async function logoutAdmin() {
 }
 
 export async function getAdminDashboard() {
-  if (!(await verifyAdminSession()))
-    return { error: "not_authenticated", data: null };
+  if (!(await verifyAdminSession())) return { error: "not_authenticated", data: null };
 
-  const supabase = getSupabaseAdminClient();
+  const supabase = await getSupabaseServerClient();
   if (!supabase) return { error: "not_configured", data: null };
 
-  const { data: auth } = await supabase.auth.admin.listUsers();
+  const { data: registrations } = await supabase
+    .from("registrations")
+    .select("*")
+    .order("created_at", { ascending: false });
 
-  const { data: architects } = await supabase
-    .from("architects")
-    .select("id");
-
+  const { data: architects } = await supabase.from("architects").select("id");
   const approvedIds = new Set((architects || []).map((a: { id: string }) => a.id));
 
-  const users = (auth?.users || []).map((u) => {
-    const meta = u.user_metadata || {};
-    return {
-      id: u.id,
-      email: u.email || "",
-      name: String(meta.name || (u.email || "").split("@")[0] || "Unknown"),
-      confirmed: Boolean(u.email_confirmed_at),
-      approved: approvedIds.has(u.id),
-      created_at: u.created_at,
-    };
-  });
+  const users = (registrations || []).map((r: Record<string, unknown>) => ({
+    id: r.user_id as string,
+    email: (r.email as string) || "",
+    name: (r.name as string) || "Unknown",
+    confirmed: Boolean(r.email_confirmed_at),
+    approved: approvedIds.has(r.user_id as string),
+    status: (r.status as string) || "pending",
+    created_at: (r.created_at as string) || "",
+  }));
 
   const { data: posts } = await supabase
     .from("posts")
@@ -90,24 +87,22 @@ function slugify(name: string): string {
 
 export async function approveArchitect(userId: string) {
   if (!(await verifyAdminSession())) return { error: "Unauthorized" };
-  const supabase = getSupabaseAdminClient();
-  if (!supabase) return { error: "Admin credentials not configured" };
+  const supabase = await getSupabaseServerClient();
+  if (!supabase) return { error: "Database not configured" };
 
-  const { data: authUser, error: authError } =
-    await supabase.auth.admin.getUserById(userId);
-  if (authError || !authUser.user) return { error: "User not found" };
+  const { data: reg } = await supabase
+    .from("registrations")
+    .select("*")
+    .eq("user_id", userId)
+    .single();
 
-  const meta = authUser.user.user_metadata || {};
-  const name = String(
-    meta.name || authUser.user.email?.split("@")[0] || "Unnamed Architect"
-  );
-  const slug = slugify(name);
+  const name = (reg?.name as string) || "Unnamed Architect";
 
   const { error } = await supabase.from("architects").upsert(
     {
       id: userId,
       name,
-      slug,
+      slug: slugify(name),
       bio: "",
       curatorial_statement: "",
       era: "",
@@ -118,39 +113,55 @@ export async function approveArchitect(userId: string) {
   );
 
   if (error) return { error: error.message };
+
+  await supabase
+    .from("registrations")
+    .update({ status: "approved", updated_at: new Date().toISOString() })
+    .eq("user_id", userId);
+
   revalidatePath("/admin");
   return { success: true };
 }
 
 export async function unapproveArchitect(userId: string) {
   if (!(await verifyAdminSession())) return { error: "Unauthorized" };
-  const supabase = getSupabaseAdminClient();
-  if (!supabase) return { error: "Admin credentials not configured" };
+  const supabase = await getSupabaseServerClient();
+  if (!supabase) return { error: "Database not configured" };
 
+  await supabase.from("posts").delete().eq("architect_id", userId);
   const { error } = await supabase.from("architects").delete().eq("id", userId);
   if (error) return { error: error.message };
+
+  await supabase
+    .from("registrations")
+    .update({ status: "pending", updated_at: new Date().toISOString() })
+    .eq("user_id", userId);
+
   revalidatePath("/admin");
   return { success: true };
 }
 
-export async function deleteAuthUserAdmin(userId: string) {
+export async function deleteRegistrationAdmin(userId: string) {
   if (!(await verifyAdminSession())) return { error: "Unauthorized" };
-  const supabase = getSupabaseAdminClient();
-  if (!supabase) return { error: "Admin credentials not configured" };
+  const supabase = await getSupabaseServerClient();
+  if (!supabase) return { error: "Database not configured" };
 
   await supabase.from("posts").delete().eq("architect_id", userId);
   await supabase.from("architects").delete().eq("id", userId);
-
-  const { error } = await supabase.auth.admin.deleteUser(userId);
+  const { error } = await supabase
+    .from("registrations")
+    .delete()
+    .eq("user_id", userId);
   if (error) return { error: error.message };
+
   revalidatePath("/admin");
   return { success: true };
 }
 
 export async function deletePostAdmin(postId: string) {
   if (!(await verifyAdminSession())) return { error: "Unauthorized" };
-  const supabase = getSupabaseAdminClient();
-  if (!supabase) return { error: "Admin credentials not configured" };
+  const supabase = await getSupabaseServerClient();
+  if (!supabase) return { error: "Database not configured" };
 
   const { error } = await supabase.from("posts").delete().eq("id", postId);
   if (error) return { error: error.message };

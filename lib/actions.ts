@@ -186,11 +186,9 @@ export async function signInWithPassword(email: string, password: string) {
   return { success: true };
 }
 
-export async function signUp(data: {
-  email: string;
-  password: string;
-  name: string;
-}) {
+export async function signUp(
+  data: { email: string; password: string; name: string; redirectTo?: string }
+) {
   const supabase = await getSupabaseServerClient();
   if (!supabase) return { error: "Database not configured" };
 
@@ -199,9 +197,22 @@ export async function signUp(data: {
     password: data.password,
     options: {
       data: { role: "architect", name: data.name },
+      emailRedirectTo: data.redirectTo,
     },
   });
   if (error) return { error: error.message };
+
+  if (signUpResult.user) {
+    await supabase.from("registrations").upsert(
+      {
+        user_id: signUpResult.user.id,
+        name: data.name,
+        email: data.email,
+        status: "pending",
+      },
+      { onConflict: "user_id" }
+    );
+  }
 
   const needsConfirmation =
     !signUpResult.session &&
@@ -214,6 +225,34 @@ export async function signUp(data: {
     needsConfirmation,
     userId: signUpResult.user?.id ?? null,
   };
+}
+
+export async function requestArchitectApproval() {
+  const supabase = await getSupabaseServerClient();
+  if (!supabase) return { error: "Database not configured" };
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "Authentication required" };
+
+  const meta = user.user_metadata || {};
+  const name =
+    String(meta.name || user.email?.split("@")[0] || "Unnamed Architect") ||
+    "Unnamed Architect";
+
+  await supabase.from("registrations").upsert(
+    {
+      user_id: user.id,
+      name,
+      email: user.email || "",
+      status: "pending",
+    },
+    { onConflict: "user_id" }
+  );
+
+  revalidatePath("/architect-portal");
+  return { success: true };
 }
 
 type PostBlock = import("./types").PostBlock;

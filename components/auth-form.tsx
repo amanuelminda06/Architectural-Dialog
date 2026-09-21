@@ -24,7 +24,12 @@ export default function AuthForm() {
         if (res.error) setError(res.error);
         else router.push("/architect-portal");
       } else {
-        const res = await signUp({ email, password, name });
+        const res = await signUp({
+          email,
+          password,
+          name,
+          redirectTo: `${window.location.origin}/auth/callback`,
+        });
         if (res.error) setError(res.error);
         else if (res.needsConfirmation) {
           setCheckEmail(true);

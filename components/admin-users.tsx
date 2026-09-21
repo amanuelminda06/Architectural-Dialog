@@ -6,7 +6,7 @@ import { Icon } from "./icon";
 import {
   approveArchitect,
   unapproveArchitect,
-  deleteAuthUserAdmin,
+  deleteRegistrationAdmin,
 } from "@/lib/admin-actions";
 
 export function AdminUsers({
@@ -95,8 +95,8 @@ export function AdminUsers({
             )}
             <button
               onClick={() => {
-                if (!confirm(`Delete ${u.email} and all their posts?`)) return;
-                run(u.id, () => deleteAuthUserAdmin(u.id));
+                if (!confirm(`Remove ${u.email} and all their posts?`)) return;
+                run(u.id, () => deleteRegistrationAdmin(u.id));
               }}
               disabled={pending && busyId === u.id}
               className="inline-flex items-center gap-1 font-label-sm text-label-sm text-secondary hover:text-error transition-colors ml-auto disabled:opacity-50"
