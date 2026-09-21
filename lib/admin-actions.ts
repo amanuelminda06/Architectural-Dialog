@@ -1,24 +1,38 @@
 "use server";
 
 import { getSupabaseAdminClient } from "./supabase-admin";
-import { getCurrentUser } from "./supabase-server";
 import { revalidatePath } from "next/cache";
+import {
+  verifyAdminSession,
+  createAdminSession,
+  destroyAdminSession,
+  getAdminPassword,
+} from "./admin-auth";
 
-const ADMIN_CLAIM = "arch_dialog_admin";
+export async function isAdminAuthenticated() {
+  return verifyAdminSession();
+}
 
-export async function isAdminUser() {
-  const user = await getCurrentUser();
-  if (!user) return false;
-  return user.app_metadata?.[ADMIN_CLAIM] === true;
+export async function loginAdmin(password: string) {
+  if (password === getAdminPassword()) {
+    await createAdminSession();
+    revalidatePath("/admin");
+    return { success: true };
+  }
+  return { error: "Incorrect password" };
+}
+
+export async function logoutAdmin() {
+  await destroyAdminSession();
+  revalidatePath("/admin");
 }
 
 export async function getAdminDashboard() {
+  if (!(await verifyAdminSession()))
+    return { error: "not_authenticated", data: null };
+
   const supabase = getSupabaseAdminClient();
-  const user = await getCurrentUser();
-  if (!supabase) return { error: "Admin credentials not configured", data: null };
-  if (!user) return { error: "Authentication required", data: null };
-  if (user.app_metadata?.[ADMIN_CLAIM] !== true)
-    return { error: "Unauthorized", data: null };
+  if (!supabase) return { error: "not_configured", data: null };
 
   const { data: auth } = await supabase.auth.admin.listUsers();
 
@@ -33,8 +47,7 @@ export async function getAdminDashboard() {
     return {
       id: u.id,
       email: u.email || "",
-      name:
-        String(meta.name || (u.email || "").split("@")[0] || "Unknown"),
+      name: String(meta.name || (u.email || "").split("@")[0] || "Unknown"),
       confirmed: Boolean(u.email_confirmed_at),
       approved: approvedIds.has(u.id),
       created_at: u.created_at,
@@ -43,15 +56,14 @@ export async function getAdminDashboard() {
 
   const { data: posts } = await supabase
     .from("posts")
-    .select("id, title, slug, category, read_time, published_at, excerpt, architects(name, slug)")
+    .select(
+      "id, title, slug, category, read_time, published_at, excerpt, architects(name, slug)"
+    )
     .order("created_at", { ascending: false });
 
   return {
     error: null,
     data: {
-      admins: auth?.users.filter(
-        (u) => u.app_metadata?.[ADMIN_CLAIM] === true
-      ).length || 0,
       users,
       posts: (posts || []).map((p: Record<string, unknown>) => ({
         id: p.id as string,
@@ -68,33 +80,6 @@ export async function getAdminDashboard() {
   };
 }
 
-export async function claimFirstAdmin() {
-  const supabase = getSupabaseAdminClient();
-  const user = await getCurrentUser();
-  if (!supabase) return { error: "Admin credentials not configured" };
-  if (!user) return { error: "Authentication required" };
-
-  const { data: auth } = await supabase.auth.admin.listUsers();
-  const hasAdmin = (auth?.users || []).some(
-    (u) => u.app_metadata?.[ADMIN_CLAIM] === true
-  );
-
-  if (hasAdmin)
-    return { error: "An administrator already exists on this project." };
-
-  const { error } = await supabase.auth.admin.updateUserById(user.id, {
-    app_metadata: { ...user.app_metadata, [ADMIN_CLAIM]: true },
-  });
-
-  if (error) return { error: error.message };
-  revalidatePath("/admin");
-  return { success: true };
-}
-
-export async function claimFirstAdminForm() {
-  await claimFirstAdmin();
-}
-
 function slugify(name: string): string {
   return name
     .toLowerCase()
@@ -104,18 +89,18 @@ function slugify(name: string): string {
 }
 
 export async function approveArchitect(userId: string) {
+  if (!(await verifyAdminSession())) return { error: "Unauthorized" };
   const supabase = getSupabaseAdminClient();
-  const user = await getCurrentUser();
   if (!supabase) return { error: "Admin credentials not configured" };
-  if (!user) return { error: "Authentication required" };
-  if (user.app_metadata?.[ADMIN_CLAIM] !== true)
-    return { error: "Unauthorized" };
 
-  const { data: authUser, error: authError } = await supabase.auth.admin.getUserById(userId);
+  const { data: authUser, error: authError } =
+    await supabase.auth.admin.getUserById(userId);
   if (authError || !authUser.user) return { error: "User not found" };
 
   const meta = authUser.user.user_metadata || {};
-  const name = String(meta.name || authUser.user.email?.split("@")[0] || "Unnamed Architect");
+  const name = String(
+    meta.name || authUser.user.email?.split("@")[0] || "Unnamed Architect"
+  );
   const slug = slugify(name);
 
   const { error } = await supabase.from("architects").upsert(
@@ -138,12 +123,9 @@ export async function approveArchitect(userId: string) {
 }
 
 export async function unapproveArchitect(userId: string) {
+  if (!(await verifyAdminSession())) return { error: "Unauthorized" };
   const supabase = getSupabaseAdminClient();
-  const user = await getCurrentUser();
   if (!supabase) return { error: "Admin credentials not configured" };
-  if (!user) return { error: "Authentication required" };
-  if (user.app_metadata?.[ADMIN_CLAIM] !== true)
-    return { error: "Unauthorized" };
 
   const { error } = await supabase.from("architects").delete().eq("id", userId);
   if (error) return { error: error.message };
@@ -152,13 +134,9 @@ export async function unapproveArchitect(userId: string) {
 }
 
 export async function deleteAuthUserAdmin(userId: string) {
+  if (!(await verifyAdminSession())) return { error: "Unauthorized" };
   const supabase = getSupabaseAdminClient();
-  const user = await getCurrentUser();
   if (!supabase) return { error: "Admin credentials not configured" };
-  if (!user) return { error: "Authentication required" };
-  if (user.app_metadata?.[ADMIN_CLAIM] !== true)
-    return { error: "Unauthorized" };
-  if (userId === user.id) return { error: "Cannot delete your own account" };
 
   await supabase.from("posts").delete().eq("architect_id", userId);
   await supabase.from("architects").delete().eq("id", userId);
@@ -170,12 +148,9 @@ export async function deleteAuthUserAdmin(userId: string) {
 }
 
 export async function deletePostAdmin(postId: string) {
+  if (!(await verifyAdminSession())) return { error: "Unauthorized" };
   const supabase = getSupabaseAdminClient();
-  const user = await getCurrentUser();
   if (!supabase) return { error: "Admin credentials not configured" };
-  if (!user) return { error: "Authentication required" };
-  if (user.app_metadata?.[ADMIN_CLAIM] !== true)
-    return { error: "Unauthorized" };
 
   const { error } = await supabase.from("posts").delete().eq("id", postId);
   if (error) return { error: error.message };
