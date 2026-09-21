@@ -1,7 +1,6 @@
 import Link from "next/link";
 
-const PROFILE_AVATAR =
-  "https://lh3.googleusercontent.com/aida-public/AB6AXuCBEUwyFKQY3sVWWfE3mOvbgCrJ0ld8DL_MxMYRV8I0U32CpiuyZ9YgCqthRSRuCgRFfpu_4Po3NmpRd09E8VFHpIlcjp6IpHytePKr9M7zwTK5PXjd9vBpn_RSb8qR1XOKv0h24gsHQGRMosYd5-TXO02F0bcHtxHfpYrrHR85_r0gVulyktlhEwLWnuN3-NUSYPbdRCXxNySzLRFN-BMF6Cr0d66oUVvASzkGF2CeFVdlP4vo3t7J";
+const PROFILE_AVATAR = "/plates/kahn-portrait.jpg";
 
 export function Masthead() {
   return (

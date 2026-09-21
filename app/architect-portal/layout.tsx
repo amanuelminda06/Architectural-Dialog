@@ -18,8 +18,9 @@ export default async function PortalLayout({
             Supabase not configured
           </p>
           <p className="font-caption text-caption text-secondary">
-            Add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY to
-            .env.local, then run the migrations in /supabase/migrations.
+            Add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY (or
+            NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY) to .env.local, then run the
+            migrations in /supabase/migrations.
           </p>
           <a
             href="/"

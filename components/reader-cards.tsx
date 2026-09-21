@@ -1,16 +1,20 @@
 import Link from "next/link";
 import { Icon } from "./icon";
 import { BookmarkButton } from "./bookmark-button";
+import { SafeImage } from "./safe-image";
 import type { Post } from "@/lib/types";
+
+const COVER_FALLBACK = "/plates/vals.png";
 
 export function ReaderFeaturedCard({ post }: { post: Post }) {
   return (
     <article className="flex flex-col bg-surface-container-low rounded overflow-hidden">
       <div className="relative w-full aspect-[16/10] overflow-hidden bg-surface-container">
-        <img
+        <SafeImage
           alt={post.title}
           className="w-full h-full object-cover"
           src={post.cover_image_url}
+          fallbackSrc={COVER_FALLBACK}
         />
         <div className="absolute top-space-sm left-space-sm bg-surface/90 backdrop-blur-md px-2 py-1 rounded">
           <span className="font-meta-mono text-meta-mono uppercase tracking-wider text-on-surface">
@@ -71,10 +75,11 @@ export function ReaderCard({ post }: { post: Post }) {
   return (
     <article className="bg-surface-container-low p-space-md rounded flex flex-col gap-space-sm">
       <div className="relative w-full aspect-[16/9] overflow-hidden rounded bg-surface-container">
-        <img
+        <SafeImage
           alt={post.title}
           className="w-full h-full object-cover"
           src={post.cover_image_url}
+          fallbackSrc={COVER_FALLBACK}
         />
         <div className="absolute bottom-2 right-2 bg-inverse-surface/85 backdrop-blur-sm px-2 py-0.5 rounded">
           <span className="font-meta-mono text-meta-mono text-inverse-on-surface">

@@ -1,17 +1,32 @@
 import Link from "next/link";
 import { Icon } from "./icon";
 import { BookmarkButton } from "./bookmark-button";
+import { SafeImage } from "./safe-image";
 import type { Post } from "@/lib/types";
 
 export function FeedPostCard({ post }: { post: Post }) {
   return (
-    <article className="p-margin transition-colors duration-150 hover:bg-surface-container-low/60 flex flex-col">
-      <div className="flex items-center justify-between mb-space-sm">
+    <article className="p-margin py-space-lg transition-colors duration-150 hover:bg-surface-container-low/60 flex flex-col">
+      <Link className="group block" href={`/articles/${post.slug}`}>
+        <div className="relative w-full aspect-[16/9] overflow-hidden rounded bg-surface-container-highest">
+          <SafeImage
+            src={post.cover_image_url}
+            alt={post.title}
+            className="w-full h-full object-cover grayscale contrast-[0.95] transition-transform duration-500 group-hover:scale-[1.02]"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent pointer-events-none" />
+          <span className="absolute top-2 left-2 bg-surface/90 backdrop-blur-md px-2 py-1 rounded font-meta-mono text-meta-mono uppercase tracking-wider text-on-surface">
+            Plate
+          </span>
+        </div>
+      </Link>
+      <div className="flex items-center justify-between mt-space-md mb-space-sm">
         <div className="flex items-center gap-space-sm">
-          <img
-            className="w-7 h-7 rounded-full object-cover"
+          <SafeImage
+            src={post.architect?.portrait_url}
+            fallbackSrc="/plates/mark-480.png"
             alt={post.architect?.name || ""}
-            src={post.architect?.portrait_url || ""}
+            className="w-7 h-7 rounded-full object-cover"
           />
           <Link
             href={`/architects/${post.architect?.slug}`}

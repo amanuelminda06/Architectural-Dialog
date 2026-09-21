@@ -5,8 +5,7 @@ export const demoArchitects: Architect[] = [
     id: "arch-kahn",
     name: "Louis I. Kahn",
     slug: "louis-i-kahn",
-    portrait_url:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuBnBjnuOqXAF5BCZOfsiVN24L5SddX4geEhRVo4eC4SuTKGcAQKmrS3i9Yws_NpIP6yHjITnm9-uEoKqXrnCBennWWoxkDrhucLgLer9U2JjPnAR56FzX8gwg4F-sRXuXAjK52QtJaFPBEhQdVDWn8Q6R7WgKi0SSbciBu5SpjQk6Z3TQpV1FDl7Wjh1_NwmkyePzlK0bCoA0KtB9tv971ijs4YirPPx16Ee9TVgw95GD62tvMsgUY7",
+    portrait_url: "/plates/kahn-portrait.jpg",
     bio: "Estonian-born American architect regarded for his monolithic, monumental forms and poetic articulation of light and raw structure.",
     curatorial_statement:
       "Kahn created monumental buildings that convey a spiritual reverence for materials, light, and geometry. His work redefined American modernism through archaic solemnity and profound structural candor.",
@@ -55,14 +54,10 @@ export const demoArchitects: Architect[] = [
   },
 ];
 
-const salkPlate =
-  "https://lh3.googleusercontent.com/aida-public/AB6AXuCGWr_zxt1FlcGqoQV_2GvKCPWOG1EhkR-l4KkACae044kABk_31vE9TtrSiBi_kaYx83CQdsKDIOgmfOxqvePPHNwX_Xdb9-b6mLhgC5PPA-aLTSCnu8eIy5wmGZD-lAlgTAxFYrwG_CNuCFVEz6XZR2GmO4U4LPdoqind2rrUqIcU40siRUMf6U-YKAsTPuQn-UZYjxtKzL0LRZidX_DvI6dbmkZBy2YbRpK1y6ew5e0jCH8IX8Wzsw";
-const brickFigure =
-  "https://lh3.googleusercontent.com/aida-public/AB6AXuCTFJqpuLHLs62zjNFvcBQt2rf8irx-TGS6OHutSmZSiez5u8hGrBpZCf2R7Lrl24qrMIJc4_B_otcFKcmG_WNv1uaGklh3sm-DAY-8NanDjK-11MMLHexC3wWdo4ZpHboVlnf-X-_aMjXaC6YV69gPdRbU7NnujhqfZOrR5GTNbyLECUO4fGCzUUwVSIEmnt7YvD8tetmdguKzeOVhc4So7Zwgnfdmai3f2SXZzeJE4UiL4iEidpi6";
-const thermVals =
-  "https://lh3.googleusercontent.com/aida-public/AB6AXuCCeqH40uW2qYXU-S2aFFpStdvwm_lagFEkqR3MtDz2fmbzAYajpTbLnUf8FpEOX8KZVdpmPMXefsPZEtQ2LCDXPwHVEKi6td6oE5n39nQDvICmFfNl6QL5kxWWqTRGi7vPd45qSaKPYVJJgiOD7YKaC6OYO1mFIWThY7wUAIZnPZ2t64V7rHcWMRKsVdNc-alZGP4fdjMiwnb2F1w5_HOu99UA14g745BN7woAN7PkzPTG1D7FQrdn0Q";
-const brickPlate =
-  "https://lh3.googleusercontent.com/aida-public/AB6AXuC0BXicV8EK5FgwNNb_1VH_hbeID0IGN5tQqXIM9Txk8YuqtXJIpeOywvSBIECqF2-5gGkNSgKrIpYsJR2GSDLPxLyt41NJyT1p3jMktcF7sp3ow5nYmx6Oj2017j3HzlSOhEmqs-t1c7b2w2XZWVo_M1OH8S-nNkHsrHkbbUb9J-mfgLiHa-uUx_oBkCDf-usyDY9lRMFE_zq7rw-lnkxyFuwPwXzIJUri3j6k6U1F9J8M4PEfhGj7Wg";
+const salkPlate = "/plates/salk.png";
+const brickFigure = "/plates/brickcoursing.png";
+const thermVals = "/plates/vals.png";
+const brickPlate = "/plates/brick-band.jpg";
 
 export const demoPosts: Post[] = [
   {

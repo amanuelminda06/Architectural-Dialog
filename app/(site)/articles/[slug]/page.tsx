@@ -6,6 +6,7 @@ import { ReadingBody } from "@/components/reading-body";
 import { Annotations } from "@/components/annotations";
 import { Icon } from "@/components/icon";
 import { getPostBySlug, listAnnotations, listPosts } from "@/lib/data";
+import { SafeImage } from "@/components/safe-image";
 
 export const dynamic = "force-dynamic";
 
@@ -44,8 +45,9 @@ export default async function ArticlePage({
         <div className="flex items-center gap-space-sm pt-space-md pb-space-md">
           {architect && (
             <Link href={`/architects/${architect.slug}`}>
-              <img
+              <SafeImage
                 alt={architect.name}
+                fallbackSrc="/plates/mark-480.png"
                 className="w-11 h-11 rounded-full object-cover shadow-sm flex-shrink-0"
                 src={architect.portrait_url}
               />

@@ -5,10 +5,10 @@
  * thin and silent.
  */
 
-const LOUS_PLATE = "/plates/salk.png";
+const LOUS_PLATE = "/plates/salk-band.jpg";
 
 export function PlateBand({
-  className = "h-36",
+  className = "h-48",
 }: {
   className?: string;
 }) {
