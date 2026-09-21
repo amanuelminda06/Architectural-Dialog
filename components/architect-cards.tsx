@@ -73,3 +73,34 @@ export function ArchitectRowCard({ architect }: { architect: Architect }) {
     </Link>
   );
 }
+/**
+ * SignatureBuildingBand — a quiet, full-width plate of the architect's
+ * signature work, mounted only on the monograph dossier (never on cards).
+ * Grayscale, low contrast, no overlay text, no borders, no rounded corners.
+ */
+
+const PLAQUES: Record<string, string> = {
+  "louis-i-kahn": "/plates/salk-band.jpg",
+  "peter-zumthor": "/plates/vals-band.jpg",
+  "juhani-pallasmaa": "/plates/brick-band.jpg",
+  "lina-bo-bardi": "/plates/brick-band.jpg",
+};
+
+export function SignatureBuildingBand({
+  slug,
+}: {
+  slug: string;
+}) {
+  const src = PLAQUES[slug] ?? "/plates/brick-band.jpg";
+  return (
+    <div className="w-full h-32 overflow-hidden bg-surface-container-low" aria-hidden>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={src}
+        alt=""
+        className="w-full h-full object-cover object-center grayscale contrast-[0.92]"
+        loading="lazy"
+      />
+    </div>
+  );
+}

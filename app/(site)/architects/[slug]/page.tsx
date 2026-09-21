@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArchitectTopBar } from "@/components/top-bar";
-import { ArchitectAvatar, WritingCard } from "@/components/architect-cards";
+import { ArchitectAvatar, SignatureBuildingBand, WritingCard } from "@/components/architect-cards";
 import { FollowButton } from "@/components/follow-button";
 import { CitationButton } from "@/components/citation-button";
 import { Icon } from "@/components/icon";
@@ -53,6 +53,8 @@ export default async function ArchitectPage({
               </p>
             </div>
           </div>
+
+          <SignatureBuildingBand slug={architect.slug} />
 
           <div className="bg-surface-container-low p-space-md rounded-lg flex flex-col gap-space-xs">
             <div className="flex items-center gap-2">
