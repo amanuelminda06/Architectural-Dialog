@@ -194,7 +194,7 @@ export async function signUp(data: {
   const supabase = await getSupabaseServerClient();
   if (!supabase) return { error: "Database not configured" };
 
-  const { error } = await supabase.auth.signUp({
+  const { data: signUpResult, error } = await supabase.auth.signUp({
     email: data.email,
     password: data.password,
     options: {
@@ -203,8 +203,17 @@ export async function signUp(data: {
   });
   if (error) return { error: error.message };
 
+  const needsConfirmation =
+    !signUpResult.session &&
+    signUpResult.user != null &&
+    signUpResult.user.email_confirmed_at == null;
+
   revalidatePath("/");
-  return { success: true };
+  return {
+    success: true,
+    needsConfirmation,
+    userId: signUpResult.user?.id ?? null,
+  };
 }
 
 type PostBlock = import("./types").PostBlock;
