@@ -1,5 +1,6 @@
 import { Masthead } from "@/components/masthead";
-import { FeedPostCard, IssueHeader } from "@/components/feed";
+import { PlateBand } from "@/components/plate-band";
+import { IssueHeader, FeedPostCard } from "@/components/feed";
 import { FooterColophon } from "@/components/footer";
 import { listPosts } from "@/lib/data";
 
@@ -11,6 +12,7 @@ export default async function HomePage() {
   return (
     <>
       <Masthead />
+      <PlateBand />
       <div className="pt-20">
         <IssueHeader
           label="Dispatches & Monographs"
