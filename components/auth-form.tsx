@@ -156,9 +156,15 @@ export default function AuthForm() {
         <div className="text-center">
           <a
             href="/"
-            className="font-label-sm text-label-sm text-secondary hover:text-on-surface transition-colors"
+            className="font-label-sm text-label-sm text-secondary hover:text-on-surface transition-colors block"
           >
             ← Return to public folio
+          </a>
+          <a
+            href="/admin"
+            className="font-label-sm text-label-sm text-secondary hover:text-primary transition-colors mt-1 inline-block"
+          >
+            Editorial admin console
           </a>
         </div>
       </div>
